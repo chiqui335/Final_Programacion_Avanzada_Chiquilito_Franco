@@ -78,20 +78,46 @@ public class UsuarioDAOImpl implements UsuarioDAO{
         }
     }
 
-    public void eliminar(int id){
-
-    }
-
-    public Usuario buscarPorUsername(String username){
-
+public void eliminar(int id){
+    try (Connection connection = ConexionDB.getInstance().getConnection();){
+        String sql = "UPDATE usuario SET activo = false WHERE id = ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setInt(1, id);
+        stmt.executeUpdate();
+    } catch (SQLException e){
+        e.printStackTrace();
     }
 }
 
-
-try (Connection connection = ConexionDB.getInstance().getConnection();){
-            
-
-            stmt.executeUpdate();
-        } catch (SQLException e){
-            e.printStackTrace();
+public Usuario buscarPorUsername(String username){
+    try (Connection connection = ConexionDB.getInstance().getConnection();){
+        String sql = "SELECT * FROM usuario WHERE username = ?";
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next()) {
+            int id = rs.getInt("id");
+            String nombre = rs.getString("nombre");
+            String usernameDB = rs.getString("username");
+            String password = rs.getString("password");
+            String dni = rs.getString("dni");
+            String email = rs.getString("email");
+            int prestamosActuales = rs.getInt("prestamosActuales");
+            int totalPrestamos = rs.getInt("totalPrestamos");
+            boolean estaRetrasado = rs.getBoolean("estaRetrasado");
+            boolean activo = rs.getBoolean("activo");
+            String rol = rs.getString("rol");
+            if(rol.equals("ADMIN")) {
+                return new Admin(id, nombre, usernameDB, password, dni, email, prestamosActuales, totalPrestamos, estaRetrasado, activo);
+            } else {
+                return new UsuarioRegular(id, nombre, usernameDB, password, dni, email, prestamosActuales, totalPrestamos, estaRetrasado, activo);
+            }
         }
+        return null;
+    } catch (SQLException e){
+        e.printStackTrace();
+    }
+    return null;
+}
+}
+
