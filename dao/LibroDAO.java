@@ -6,4 +6,6 @@ public interface LibroDAO {
     void actualizar(Libro libro);
     void eliminar(int id);
     List<Libro> buscarPorTitulo(String titulo);
+
+    List<Libro> listarTodos();
 }

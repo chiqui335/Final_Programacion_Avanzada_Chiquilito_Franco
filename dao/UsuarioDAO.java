@@ -4,4 +4,6 @@ public interface UsuarioDAO {
     void actualizar(Usuario usuario);
     void eliminar(int id);
     Usuario buscarPorUsernames(String username);
+
+    List<Usuario> listarTodos();
 }

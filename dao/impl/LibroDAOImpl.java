@@ -115,4 +115,28 @@ libros.add(new Libro(id, tituloLibro, autor, tipo, tapaDura, activo, cantidadDis
             return null;
 
     }
+
+    public List<Libro> listarTodos() {
+        try (Connection connection = ConexionDB.getInstance().getConnection();) {
+            String sql = "SELECT * FROM libro WHERE activo = true";
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            List<Libro> libros = new ArrayList<>();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String titulo = rs.getString("titulo");
+                String autor = rs.getString("autor");
+                String tipo = rs.getString("tipo");
+                boolean tapaDura = rs.getBoolean("tapaDura");
+                boolean activo = rs.getBoolean("activo");
+                int cantidadDisponible = rs.getInt("cantidadDisponible");
+                int cantidadTotal = rs.getInt("cantidadTotal");
+                libros.add(new Libro(id, titulo, autor, tipo, tapaDura, activo, cantidadDisponible, cantidadTotal));
+            }
+            return libros;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
