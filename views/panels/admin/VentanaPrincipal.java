@@ -1,5 +1,4 @@
-package admin;
+package BibliotecaDigital.views.panels.admin;
 
 public class VentanaPrincipal {
-
 }

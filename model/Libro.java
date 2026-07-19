@@ -1,3 +1,5 @@
+package BibliotecaDigital.model;
+
 public class Libro {
     private int id;
     private String titulo;
@@ -8,7 +10,7 @@ public class Libro {
     private int cantidadTotal;
     private boolean activo;
 
-    public Libro (int id, String titulo, String autor, String tipo, boolean tapaDura, int cantidadDisponible, int cantidadTotal, boolean activo) {
+    public Libro(int id, String titulo, String autor, String tipo, boolean tapaDura, int cantidadDisponible, int cantidadTotal, boolean activo) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -22,8 +24,8 @@ public class Libro {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public String getTitulo() {return titulo;}
-    public void setTitulo(String titulo) {this.titulo = titulo;}
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
 
     public String getAutor() { return autor; }
     public void setAutor(String autor) { this.autor = autor; }
@@ -43,16 +45,7 @@ public class Libro {
     public boolean isActivo() { return activo; }
     public void setActivo(boolean activo) { this.activo = activo; }
 
-
-    public void prestar(){
-        this.cantidadDisponible--;
-    }
-
-    public void devolver(){
-        this.cantidadDisponible++;
-    }
-
-    public boolean estaDisponible(){
-        return this.cantidadDisponible > 0;
-    }
+    public void prestar() { this.cantidadDisponible--; }
+    public void devolver() { this.cantidadDisponible++; }
+    public boolean estaDisponible() { return this.cantidadDisponible > 0; }
 }

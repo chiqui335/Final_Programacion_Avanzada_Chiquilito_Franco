@@ -1,39 +1,39 @@
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+package BibliotecaDigital.views.panels;
+
+import BibliotecaDigital.model.Usuario;
+import BibliotecaDigital.services.BibliotecaServices;
+import BibliotecaDigital.views.VentanaPrincipal;
+import BibliotecaDigital.views.panels.usuario.PanelVerPrestamos;
+import BibliotecaDigital.views.panels.usuario.PanelGenerarPrestamo;
+import BibliotecaDigital.views.panels.usuario.PanelGestionPerfil;
+import javax.swing.*;
 
 public class PanelMenuUsuario extends JPanel {
     private BibliotecaServices servicios;
     private VentanaPrincipal ventana;
     private Usuario usuarioActual;
 
-    public PanelMenuUsuario (BibliotecaServices servicios, VentanaPrincipal ventana, Usuario usuarioActual){
+    public PanelMenuUsuario(BibliotecaServices servicios, VentanaPrincipal ventana, Usuario usuarioActual) {
+        this.servicios = servicios;
         this.ventana = ventana;
         this.usuarioActual = usuarioActual;
-        this.servicios = servicios;
 
-        JButton btnVerPrestamos  = new JButton("Ver Prestamos");
-        JButton btnGenerarPrestamo  = new JButton("Generar Préstamo");
-        JButton btnGestionarPerfil  = new JButton("Modificar Perfil");
+        JButton btnVerPrestamos    = new JButton("Ver Prestamos");
+        JButton btnGenerarPrestamo = new JButton("Generar Préstamo");
+        JButton btnGestionarPerfil = new JButton("Modificar Perfil");
 
         add(btnVerPrestamos);
         add(btnGenerarPrestamo);
         add(btnGestionarPerfil);
 
-        btnVerPrestamos.addActionListener(e -> {
-            ventana.cambiarPanel(new PanelVerPrestamos(ventana, servicios));
-        });
-
-
-        btnGenerarPrestamo.addActionListener(e -> {
-            ventana.cambiarPanel(new PanelGenerarPrestamo(ventana, servicios));
-
-        });
-
-
-        btnGestionarPerfil.addActionListener(e -> {
-            ventana.cambiarPanel(new PanelGestionarPerfil(ventana, servicios));
-
-        });
+        btnVerPrestamos.addActionListener(e ->
+            ventana.cambiarPanel(new PanelVerPrestamos(servicios, ventana, usuarioActual))
+        );
+        btnGenerarPrestamo.addActionListener(e ->
+            ventana.cambiarPanel(new PanelGenerarPrestamo(servicios, ventana, usuarioActual))
+        );
+        btnGestionarPerfil.addActionListener(e ->
+            ventana.cambiarPanel(new PanelGestionPerfil(servicios, ventana, usuarioActual))
+        );
     }
-
-}tambie
+}

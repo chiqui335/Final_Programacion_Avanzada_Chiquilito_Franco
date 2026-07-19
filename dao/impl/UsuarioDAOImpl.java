@@ -1,3 +1,10 @@
+package BibliotecaDigital.dao.impl;
+
+import BibliotecaDigital.dao.UsuarioDAO;
+import BibliotecaDigital.model.Admin;
+import BibliotecaDigital.model.Usuario;
+import BibliotecaDigital.model.UsuarioRegular;
+import BibliotecaDigital.util.ConexionDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

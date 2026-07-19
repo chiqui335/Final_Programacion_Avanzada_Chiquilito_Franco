@@ -1,3 +1,5 @@
+package BibliotecaDigital.model;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -10,7 +12,7 @@ public class Prestamo {
     private Usuario usuario;
     private Libro libro;
 
-    public Prestamo (int id, LocalDate fechaInicio, LocalDate fechaDevolucion, boolean finalizado, boolean retrasado, Usuario usuario, Libro libro){
+    public Prestamo(int id, LocalDate fechaInicio, LocalDate fechaDevolucion, boolean finalizado, boolean retrasado, Usuario usuario, Libro libro) {
         this.id = id;
         this.fechaInicio = fechaInicio;
         this.fechaDevolucion = fechaDevolucion;
@@ -20,73 +22,28 @@ public class Prestamo {
         this.libro = libro;
     }
 
-    public int getId() {
-    return id;
-}
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-public void setId(int id) {
-    this.id = id;
-}
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
 
-public LocalDate getFechaInicio() {
-    return fechaInicio;
-}
+    public LocalDate getFechaDevolucion() { return fechaDevolucion; }
+    public void setFechaDevolucion(LocalDate fechaDevolucion) { this.fechaDevolucion = fechaDevolucion; }
 
-public void setFechaInicio(LocalDate fechaInicio) {
-    this.fechaInicio = fechaInicio;
-}
+    public boolean isFinalizado() { return finalizado; }
+    public void setFinalizado(boolean finalizado) { this.finalizado = finalizado; }
 
-public LocalDate getFechaDevolucion() {
-    return fechaDevolucion;
-}
+    public boolean isRetrasado() { return retrasado; }
+    public void setRetrasado(boolean retrasado) { this.retrasado = retrasado; }
 
-public void setFechaDevolucion(LocalDate fechaDevolucion) {
-    this.fechaDevolucion = fechaDevolucion;
-}
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-public boolean isFinalizado() {
-    return finalizado;
-}
+    public Libro getLibro() { return libro; }
+    public void setLibro(Libro libro) { this.libro = libro; }
 
-public void setFinalizado(boolean finalizado) {
-    this.finalizado = finalizado;
-}
-
-public boolean isRetrasado() {
-    return retrasado;
-}
-
-public void setRetrasado(boolean retrasado) {
-    this.retrasado = retrasado;
-}
-
-public Usuario getUsuario() {
-    return usuario;
-}
-
-public void setUsuario(Usuario usuario) {
-    this.usuario = usuario;
-}
-
-public Libro getLibro() {
-    return libro;
-}
-
-public void setLibro(Libro libro) {
-    this.libro = libro;
-}
-
-public long getDiasRestantes() {
-    return ChronoUnit.DAYS.between(LocalDate.now(), fechaDevolucion);
-}
-
-public void finalizar(){
-    this.finalizado = true;
-}
-
-public boolean verificarRetraso(){
-    return LocalDate.now().isAfter(fechaDevolucion);
-}
-
-
+    public long getDiasRestantes() { return ChronoUnit.DAYS.between(LocalDate.now(), fechaDevolucion); }
+    public void finalizar() { this.finalizado = true; }
+    public boolean verificarRetraso() { return LocalDate.now().isAfter(fechaDevolucion); }
 }

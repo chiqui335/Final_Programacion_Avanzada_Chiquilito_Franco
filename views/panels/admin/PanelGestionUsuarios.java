@@ -1,5 +1,14 @@
-package panels.admin;
+package BibliotecaDigital.views.panels.admin;
 
+import BibliotecaDigital.model.Admin;
+import BibliotecaDigital.model.Usuario;
+import BibliotecaDigital.model.UsuarioRegular;
+import BibliotecaDigital.services.BibliotecaServices;
+import BibliotecaDigital.services.exceptions.UsuarioNoActivoException;
+import BibliotecaDigital.services.exceptions.UsuarioNoDisponibleException;
+import BibliotecaDigital.services.exceptions.UsuarioYaExisteException;
+import BibliotecaDigital.views.VentanaPrincipal;
+import BibliotecaDigital.views.panels.PanelMenuAdmin;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -16,8 +25,7 @@ public class PanelGestionUsuarios extends JPanel {
     private JTextField txtPassword;
     private JTextField txtDni;
     private JTextField txtEmail;
-
-    private JComboBox rol;
+    private JComboBox<String> rol;
 
     private JButton agregar;
     private JButton modificar;
@@ -26,14 +34,12 @@ public class PanelGestionUsuarios extends JPanel {
 
     private JTable tablaUsuarios;
     private DefaultTableModel modeloTabla;
-
     private JScrollPane scrollTabla;
 
-    public PanelGestionUsuarios (BibliotecaServices servicios, VentanaPrincipal ventana, Usuario usuarioActual){
+    public PanelGestionUsuarios(BibliotecaServices servicios, VentanaPrincipal ventana, Usuario usuarioActual) {
         this.servicios = servicios;
         this.ventana = ventana;
         this.usuarioActual = usuarioActual;
-
         setLayout(new BorderLayout(10, 10));
         initComponentes();
         cargarTabla();
@@ -41,57 +47,111 @@ public class PanelGestionUsuarios extends JPanel {
         configurarAcciones();
     }
 
-    private void initComponentes(){
-        String[] columnas = {"Nombre", "Username", "Password", "Dni", "Email"};
-        modeloTabla = new DefaultTableModel(columnas,0){
+    private void initComponentes() {
+        String[] columnas = {"Nombre", "Username", "DNI", "Email", "Rol"};
+        modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
         tablaUsuarios = new JTable(modeloTabla);
         tablaUsuarios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrollTabla = new JScrollPane(tablaUsuarios);
         add(scrollTabla, BorderLayout.CENTER);
 
-        JPanel panelCampos = new JPanel(new GridLayout(6,2,5,5));
-        panelCampos.setBorder(BorderFactory.createTitledBorder("Datos el usuario"));
+        JPanel panelCampos = new JPanel(new GridLayout(6, 2, 5, 5));
+        panelCampos.setBorder(BorderFactory.createTitledBorder("Datos del usuario"));
 
-        txtNombre = new JTextField();
+        txtNombre   = new JTextField();
         txtUsername = new JTextField();
         txtPassword = new JTextField();
-        txtDni = new JTextField();
-        txtEmail = new JTextField();
+        txtDni      = new JTextField();
+        txtEmail    = new JTextField();
+        rol = new JComboBox<>(new String[]{"REGULAR", "ADMIN"});
 
-        panelCampos.add(new JLabel("Nombre:"));
-        panelCampos.add(txtNombre);
-        panelCampos.add(new JLabel("Usuario:"));
-        panelCampos.add(txtUsername);
-        panelCampos.add(new JLabel("Contraseña:"));
-        panelCampos.add(txtPassword);
-        panelCampos.add(new JLabel("DNI:"));
-        panelCampos.add(txtDni);
-        panelCampos.add(new JLabel("Email:"));
-        panelCampos.add(txtEmail);
-
+        panelCampos.add(new JLabel("Nombre:")); panelCampos.add(txtNombre);
+        panelCampos.add(new JLabel("Usuario:")); panelCampos.add(txtUsername);
+        panelCampos.add(new JLabel("Contraseña:")); panelCampos.add(txtPassword);
+        panelCampos.add(new JLabel("DNI:")); panelCampos.add(txtDni);
+        panelCampos.add(new JLabel("Email:")); panelCampos.add(txtEmail);
+        panelCampos.add(new JLabel("Rol:")); panelCampos.add(rol);
         add(panelCampos, BorderLayout.EAST);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        add(panelBotones, BorderLayout.SOUTH);
-
-        agregar = new JButton("Agregar");
+        agregar  = new JButton("Agregar");
         modificar = new JButton("Modificar");
-        eliminar = new JButton("Eliminar");
-        volver = new JButton("Volver");
-
+        eliminar  = new JButton("Eliminar");
+        volver    = new JButton("Volver");
         panelBotones.add(agregar);
         panelBotones.add(modificar);
         panelBotones.add(eliminar);
         panelBotones.add(volver);
+        add(panelBotones, BorderLayout.SOUTH);
+    }
 
+    private void cargarTabla() {
+        modeloTabla.setRowCount(0);
+        List<Usuario> usuarios = servicios.listarTodosLosUsuarios();
+        for (Usuario u : usuarios) {
+            modeloTabla.addRow(new Object[]{u.getNombre(), u.getUsername(), u.getDni(), u.getEmail(), u.getRol()});
+        }
+    }
 
-        rol = new JComboBox<>(new String[]{"REGULAR", "ADMIN"});
-        panelCampos.add(new JLabel("Rol:"));
-        panelCampos.add(rol);
+    private void limpiarCampos() {
+        txtNombre.setText(""); txtUsername.setText(""); txtPassword.setText("");
+        txtDni.setText(""); txtEmail.setText(""); rol.setSelectedIndex(0);
+    }
+
+    private void configurarAcciones() {
+        agregar.addActionListener(e -> {
+            String rolSeleccionado = (String) rol.getSelectedItem();
+            Usuario nuevoUsuario = rolSeleccionado.equals("ADMIN")
+                ? new Admin(0, txtNombre.getText().trim(), txtUsername.getText().trim(), txtPassword.getText().trim(), txtDni.getText().trim(), txtEmail.getText().trim(), 0, 0, false)
+                : new UsuarioRegular(0, txtNombre.getText().trim(), txtUsername.getText().trim(), txtPassword.getText().trim(), txtDni.getText().trim(), txtEmail.getText().trim(), 0, 0, false);
+            try {
+                servicios.agregarUsuario(nuevoUsuario);
+                cargarTabla(); limpiarCampos();
+            } catch (UsuarioYaExisteException ex) {
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        });
+
+        modificar.addActionListener(e -> {
+            int fila = tablaUsuarios.getSelectedRow();
+            if (fila == -1) { JOptionPane.showMessageDialog(null, "Seleccione un usuario"); return; }
+            String username = (String) modeloTabla.getValueAt(fila, 1);
+            Usuario u = servicios.buscarUsuarioPorUsername(username);
+            if (u != null) {
+                u.setNombre(txtNombre.getText().trim());
+                u.setPassword(txtPassword.getText().trim());
+                u.setDni(txtDni.getText().trim());
+                u.setEmail(txtEmail.getText().trim());
+                u.setRol((String) rol.getSelectedItem());
+                try {
+                    servicios.modificarUsuario(u);
+                    cargarTabla(); limpiarCampos();
+                } catch (UsuarioNoDisponibleException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+            }
+        });
+
+        eliminar.addActionListener(e -> {
+            int fila = tablaUsuarios.getSelectedRow();
+            if (fila == -1) { JOptionPane.showMessageDialog(null, "Seleccione un usuario"); return; }
+            String username = (String) modeloTabla.getValueAt(fila, 1);
+            Usuario u = servicios.buscarUsuarioPorUsername(username);
+            if (u != null) {
+                try {
+                    servicios.eliminarUsuario(u.getId());
+                    cargarTabla(); limpiarCampos();
+                } catch (UsuarioNoActivoException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                }
+            }
+        });
+
+        volver.addActionListener(e ->
+            ventana.cambiarPanel(new PanelMenuAdmin(servicios, ventana, usuarioActual))
+        );
     }
 }
