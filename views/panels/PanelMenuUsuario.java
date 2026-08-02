@@ -21,10 +21,12 @@ public class PanelMenuUsuario extends JPanel {
         JButton btnVerPrestamos    = new JButton("Ver Prestamos");
         JButton btnGenerarPrestamo = new JButton("Generar Préstamo");
         JButton btnGestionarPerfil = new JButton("Modificar Perfil");
+        JButton btnCerrarSesion    = new JButton("Cerrar Sesión");
 
         add(btnVerPrestamos);
         add(btnGenerarPrestamo);
         add(btnGestionarPerfil);
+        add(btnCerrarSesion);
 
         btnVerPrestamos.addActionListener(e ->
             ventana.cambiarPanel(new PanelVerPrestamos(servicios, ventana, usuarioActual))
@@ -34,6 +36,9 @@ public class PanelMenuUsuario extends JPanel {
         );
         btnGestionarPerfil.addActionListener(e ->
             ventana.cambiarPanel(new PanelGestionPerfil(servicios, ventana, usuarioActual))
+        );
+        btnCerrarSesion.addActionListener(e ->
+            ventana.cambiarPanel(new PanelLogin(ventana, servicios))
         );
     }
 }

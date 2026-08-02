@@ -68,7 +68,9 @@ public class PanelGestionLibros extends JPanel {
         panelCampos.add(new JLabel("Tipo:")); panelCampos.add(txtTipo);
         panelCampos.add(new JLabel("Tapa dura:")); panelCampos.add(chkTapaDura);
         panelCampos.add(new JLabel("Cantidad total:")); panelCampos.add(spnCantidadTotal);
-        add(panelCampos, BorderLayout.EAST);
+        JPanel panelEast = new JPanel(new BorderLayout());
+        panelEast.add(panelCampos, BorderLayout.NORTH);
+        add(panelEast, BorderLayout.EAST);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         btnAgregar   = new JButton("Agregar");

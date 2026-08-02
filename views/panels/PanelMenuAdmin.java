@@ -23,11 +23,13 @@ public class PanelMenuAdmin extends JPanel {
         JButton btnGestionarUsuarios = new JButton("Gestionar Usuarios");
         JButton btnGenerarPrestamo   = new JButton("Generar Préstamo");
         JButton btnReportes          = new JButton("Ver Reportes");
+        JButton btnCerrarSesion      = new JButton("Cerrar Sesión");
 
         add(btnGestionarLibros);
         add(btnGestionarUsuarios);
         add(btnGenerarPrestamo);
         add(btnReportes);
+        add(btnCerrarSesion);
 
         btnGestionarLibros.addActionListener(e ->
             ventana.cambiarPanel(new PanelGestionLibros(ventana, servicios, usuarioActual))
@@ -40,6 +42,9 @@ public class PanelMenuAdmin extends JPanel {
         );
         btnReportes.addActionListener(e ->
             ventana.cambiarPanel(new PanelGestionReportes(servicios, ventana, usuarioActual))
+        );
+        btnCerrarSesion.addActionListener(e ->
+            ventana.cambiarPanel(new PanelLogin(ventana, servicios))
         );
     }
 }

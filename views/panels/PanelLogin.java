@@ -2,6 +2,7 @@ package BibliotecaDigital.views.panels;
 
 import BibliotecaDigital.model.Usuario;
 import BibliotecaDigital.services.BibliotecaServices;
+import BibliotecaDigital.util.PasswordUtil;
 import BibliotecaDigital.views.VentanaPrincipal;
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,7 @@ public class PanelLogin extends JPanel {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
             Usuario usuario = servicios.buscarUsuarioPorUsername(username);
-            if (usuario == null || !usuario.getPassword().equals(password)) {
+            if (usuario == null || !PasswordUtil.verify(password, usuario.getPassword())) {
                 JOptionPane.showMessageDialog(null, "Usuario o contraseña incorrectos");
             } else if (usuario.getRol().equals("ADMIN")) {
                 ventana.cambiarPanel(new PanelMenuAdmin(servicios, ventana, usuario));

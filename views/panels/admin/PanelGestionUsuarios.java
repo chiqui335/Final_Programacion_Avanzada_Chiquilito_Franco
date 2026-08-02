@@ -55,6 +55,17 @@ public class PanelGestionUsuarios extends JPanel {
         };
         tablaUsuarios = new JTable(modeloTabla);
         tablaUsuarios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tablaUsuarios.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) return;
+            int fila = tablaUsuarios.getSelectedRow();
+            if (fila == -1) return;
+            txtNombre.setText((String) modeloTabla.getValueAt(fila, 0));
+            txtUsername.setText((String) modeloTabla.getValueAt(fila, 1));
+            txtPassword.setText("");
+            txtDni.setText((String) modeloTabla.getValueAt(fila, 2));
+            txtEmail.setText((String) modeloTabla.getValueAt(fila, 3));
+            rol.setSelectedItem(modeloTabla.getValueAt(fila, 4));
+        });
         scrollTabla = new JScrollPane(tablaUsuarios);
         add(scrollTabla, BorderLayout.CENTER);
 
@@ -70,11 +81,13 @@ public class PanelGestionUsuarios extends JPanel {
 
         panelCampos.add(new JLabel("Nombre:")); panelCampos.add(txtNombre);
         panelCampos.add(new JLabel("Usuario:")); panelCampos.add(txtUsername);
-        panelCampos.add(new JLabel("Contraseña:")); panelCampos.add(txtPassword);
+        panelCampos.add(new JLabel("Contraseña (vacío = no cambiar):")); panelCampos.add(txtPassword);
         panelCampos.add(new JLabel("DNI:")); panelCampos.add(txtDni);
         panelCampos.add(new JLabel("Email:")); panelCampos.add(txtEmail);
         panelCampos.add(new JLabel("Rol:")); panelCampos.add(rol);
-        add(panelCampos, BorderLayout.EAST);
+        JPanel panelEast = new JPanel(new BorderLayout());
+        panelEast.add(panelCampos, BorderLayout.NORTH);
+        add(panelEast, BorderLayout.EAST);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         agregar  = new JButton("Agregar");
@@ -121,10 +134,14 @@ public class PanelGestionUsuarios extends JPanel {
             String username = (String) modeloTabla.getValueAt(fila, 1);
             Usuario u = servicios.buscarUsuarioPorUsername(username);
             if (u != null) {
-                u.setNombre(txtNombre.getText().trim());
-                u.setPassword(txtPassword.getText().trim());
-                u.setDni(txtDni.getText().trim());
-                u.setEmail(txtEmail.getText().trim());
+                String nombre = txtNombre.getText().trim();
+                String password = txtPassword.getText().trim();
+                String dni = txtDni.getText().trim();
+                String email = txtEmail.getText().trim();
+                if (!nombre.isEmpty()) u.setNombre(nombre);
+                u.setPassword(password);
+                if (!dni.isEmpty()) u.setDni(dni);
+                if (!email.isEmpty()) u.setEmail(email);
                 u.setRol((String) rol.getSelectedItem());
                 try {
                     servicios.modificarUsuario(u);

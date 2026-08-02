@@ -35,7 +35,9 @@ public class PanelGenerarPrestamo extends JPanel {
         cmbLibro = new JComboBox<>();
         panelCampos.add(new JLabel("Libro:"));
         panelCampos.add(cmbLibro);
-        add(panelCampos, BorderLayout.CENTER);
+        JPanel panelCenter = new JPanel(new BorderLayout());
+        panelCenter.add(panelCampos, BorderLayout.NORTH);
+        add(panelCenter, BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         btnGenerar = new JButton("Generar Préstamo");

@@ -45,10 +45,12 @@ public class PanelGestionPerfil extends JPanel {
 
         panelCampos.add(new JLabel("Nombre:")); panelCampos.add(txtNombre);
         panelCampos.add(new JLabel("Username:")); panelCampos.add(txtUsername);
-        panelCampos.add(new JLabel("Password:")); panelCampos.add(txtPassword);
+        panelCampos.add(new JLabel("Password (vacío = no cambiar):")); panelCampos.add(txtPassword);
         panelCampos.add(new JLabel("Email:")); panelCampos.add(txtEmail);
         panelCampos.add(new JLabel("DNI:")); panelCampos.add(txtDni);
-        add(panelCampos, BorderLayout.CENTER);
+        JPanel panelCenter = new JPanel(new BorderLayout());
+        panelCenter.add(panelCampos, BorderLayout.NORTH);
+        add(panelCenter, BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         btnModificar = new JButton("Modificar");
@@ -61,7 +63,6 @@ public class PanelGestionPerfil extends JPanel {
     private void cargarDatosUsuario() {
         txtNombre.setText(usuarioActual.getNombre());
         txtUsername.setText(usuarioActual.getUsername());
-        txtPassword.setText(usuarioActual.getPassword());
         txtEmail.setText(usuarioActual.getEmail());
         txtDni.setText(usuarioActual.getDni());
     }

@@ -63,6 +63,18 @@ por título?, ¿el usuario está activo?, ¿hay stock disponible?) viven en un �
 (`BibliotecaServices`), así los paneles no repiten la misma regla de negocio cada vez
 que arman un formulario, y un cambio de regla se edita en un solo método.
 
+**Contraseñas con hash (PBKDF2WithHmacSHA256 + salt), no en texto plano.**
+Al principio las contraseñas se guardaban tal cual las tipeaba el usuario, comparadas
+con `.equals()` en el login. Se reemplazó por un hash de un solo sentido
+(`util/PasswordUtil.java`): 65.536 iteraciones de PBKDF2 con un salt aleatorio de 16
+bytes distinto por usuario, guardado como `iteraciones:salt:hash` en la misma columna.
+Se eligió PBKDF2 y no una encriptación reversible (AES, etc.) porque una contraseña
+nunca debería poder recuperarse en texto plano ni siquiera por quien administra la
+base — solo hace falta poder *verificar* que lo que tipeó el usuario coincide, no
+*leer* la contraseña original. Y se eligió PBKDF2 sobre bcrypt/Argon2 (más estándar
+en la industria) porque viene incluido en el JDK (`javax.crypto`) sin agregar una
+dependencia externa nueva al proyecto.
+
 **Excepciones personalizadas en vez de devolver `null`/`boolean` o lanzar
 `RuntimeException` genérica.** Antes de esta iteración, un fallo de JDBC se tragaba
 con `e.printStackTrace()` y el método devolvía `null`, lo cual terminaba explotando
@@ -117,3 +129,65 @@ tests sin tocar el resto del sistema.
   más cercano sería una *Factory* para construir `Admin` o `UsuarioRegular` según el
   campo `rol` al leer de la base (hoy ese `if/else` vive inline en `UsuarioDAOImpl`),
   pero no se llegó a extraer como patrón formal.
+
+## 4. Instrucciones de compilación y ejecución
+
+### Requisitos previos
+- **JDK 17 o superior** (probado con JDK 26).
+- **IntelliJ IDEA** — alcanza la edición Community, no hace falta Ultimate.
+- **Un servidor MySQL** corriendo en `localhost:3306`. Sirve tanto XAMPP como una
+  instalación de MySQL Server independiente (Workbench, `mysql` por línea de
+  comandos, etc.) — los pasos de abajo cubren ambos casos.
+- El **driver JDBC de MySQL ya viene incluido en el repositorio**
+  (`lib/mysql-connector-j-26.7.0.jar`) y referenciado en `BibliotecaDigital.iml` —
+  no hace falta descargarlo aparte.
+
+### Paso 1 — Base de datos
+Hay dos caminos según lo que se tenga a mano:
+
+**Opción A — importar el dump con datos de prueba ya cargados (recomendada)**
+Se incluye `sql/bibliotecadigital_dump.sql`, un export completo de la base con las
+tablas y datos de ejemplo (usuarios, libros y préstamos en distintos estados,
+incluyendo uno retrasado) ya cargados.
+- **Con XAMPP**: arrancar el módulo MySQL desde el panel de XAMPP → abrir
+  `localhost/phpmyadmin` → pestaña **Importar** → elegir el archivo → **Continuar**.
+- **Con MySQL independiente / Workbench**: abrir el archivo en Workbench y
+  ejecutarlo contra el servidor (⚡), o por línea de comandos:
+  ```
+  mysql -u root -p < bibliotecadigital_dump.sql
+  ```
+  (dejar la contraseña vacía al pedirla si el usuario `root` no tiene una configurada).
+
+**Opción B — crear la base vacía desde cero**
+Ejecutar `sql/Biblioteca.sql` (crea la base `bibliotecadigital` y las 3 tablas sin
+datos) de la misma forma que en la Opción A. Como no hay pantalla de registro en la
+app, hay que sembrar manualmente al menos un usuario admin para poder entrar:
+```sql
+USE bibliotecadigital;
+INSERT INTO usuario (nombre, username, password, dni, email, rol)
+VALUES ('Admin', 'admin', '1234', '00000000', 'admin@test.com', 'ADMIN');
+```
+
+En ambos casos la aplicación espera la base en `localhost:3306`, esquema
+`bibliotecadigital`, usuario `root`, sin contraseña (ver `URL`/`USUARIO`/`CONTRASENA`
+en [util/ConexionDB.java](../util/ConexionDB.java)). Si el servidor de destino tiene
+otra configuración, hay que editar esas tres constantes ahí antes de compilar.
+
+### Paso 2 — Abrir el proyecto
+1. IntelliJ IDEA → **Open** → seleccionar la carpeta `BibliotecaDigital/` (la que
+   contiene `.idea` y `BibliotecaDigital.iml` — no la carpeta de arriba).
+2. Si el proyecto queda marcado con el SDK en rojo: `File → Project Structure →
+   Project → SDK`, elegir el JDK instalado (o `Add SDK → Download JDK...` si no hay
+   ninguno).
+3. Si `Run → 'Main.main()'` no aparece en el menú contextual o el botón de correr
+   queda gris: `Run → Edit Configurations... → + → Application` — Main class:
+   `BibliotecaDigital.Main`, Module: `BibliotecaDigital` → OK.
+
+### Paso 3 — Ejecutar
+Click derecho sobre `Main.java` (en la raíz del módulo, junto a `dao`, `model`,
+`services`, `views`) → **Run 'Main.main()'**.
+
+Se abre la pantalla de login. Con el dump de la Opción A ya se puede entrar
+directamente con:
+- **Usuario:** `admin`
+- **Contraseña:** `1234`

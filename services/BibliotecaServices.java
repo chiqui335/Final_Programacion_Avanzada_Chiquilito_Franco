@@ -7,6 +7,7 @@ import BibliotecaDigital.model.Libro;
 import BibliotecaDigital.model.Prestamo;
 import BibliotecaDigital.model.Usuario;
 import BibliotecaDigital.services.exceptions.*;
+import BibliotecaDigital.util.PasswordUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,7 @@ public class BibliotecaServices {
         if (usuarioDAO.buscarPorUsername(usuario.getUsername()) != null) {
             throw new UsuarioYaExisteException("Ya existe una cuenta con ese usuario");
         }
+        usuario.setPassword(PasswordUtil.hash(usuario.getPassword()));
         usuarioDAO.crear(usuario);
     }
 
@@ -73,6 +75,11 @@ public class BibliotecaServices {
         Usuario usuarioExistente = usuarioDAO.leer(usuario.getId());
         if (usuarioExistente == null || !usuarioExistente.isActivo()) {
             throw new UsuarioNoDisponibleException("El usuario no existe o está dado de baja");
+        }
+        if (usuario.getPassword() == null || usuario.getPassword().isBlank()) {
+            usuario.setPassword(usuarioExistente.getPassword());
+        } else {
+            usuario.setPassword(PasswordUtil.hash(usuario.getPassword()));
         }
         usuarioDAO.actualizar(usuario);
     }
